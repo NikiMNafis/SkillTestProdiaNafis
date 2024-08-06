@@ -23,6 +23,9 @@ class ArticleViewModel: ViewModel() {
     private val _categoryData = MutableLiveData<List<String>>()
     val categoryData: LiveData<List<String>> = _categoryData
 
+    private val _articleFilteredData = MutableLiveData<List<ResultsItem>>()
+    val articleFilteredData: LiveData<List<ResultsItem>> = _articleFilteredData
+
     init {
         getCategory()
     }
@@ -91,6 +94,16 @@ class ArticleViewModel: ViewModel() {
                 Log.e(TAG, "onFailure: ${t.message}")
             }
         })
+    }
+
+    fun filterArticlesByCategory(category: String) {
+        val allArticles = _articlesData.value?: emptyList()
+        val filteredArticles = if (category.isEmpty()) {
+            allArticles
+        } else {
+            allArticles?.filter { it.newsSite == category }
+        }
+        _articleFilteredData.value = filteredArticles!!
     }
 
     companion object {
