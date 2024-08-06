@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">SkillTestProdia</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="list_artikel">List Artikel</string>
+    <string name="article_name">article name</string>
+</resources>
