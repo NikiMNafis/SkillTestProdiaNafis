@@ -93,16 +93,6 @@ class ArticleViewModel: ViewModel() {
         })
     }
 
-//    fun filterArticlesByCategory(category: String) {
-//        val allArticles = _articlesData.value?: emptyList()
-//        val filteredArticles = if (category.isEmpty()) {
-//            allArticles
-//        } else {
-//            allArticles?.filter { it.newsSite == category }
-//        }
-//        _articlesData.value = filteredArticles!!
-//    }
-
     companion object {
         private const val TAG = "MainActivity"
     }

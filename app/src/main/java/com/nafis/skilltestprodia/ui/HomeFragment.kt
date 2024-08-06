@@ -25,8 +25,6 @@ class HomeFragment : Fragment() {
 
     private var selectedCategory: String = ""
 
-    private var articlesData = List<ResultsItem>()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -49,7 +47,6 @@ class HomeFragment : Fragment() {
 
         articleViewModel.getArticles()
         articleViewModel.articlesData.observe(viewLifecycleOwner) {articleData ->
-            articlesData = articleData
             showRvArticles(articleData)
         }
 
@@ -57,7 +54,6 @@ class HomeFragment : Fragment() {
 //            setupSpinner(it)
         }
 
-//        showRvArticles(articlesData)
     }
 
     private fun showRvArticles(articleData: List<ResultsItem>) {
@@ -93,23 +89,6 @@ class HomeFragment : Fragment() {
             }
         })
     }
-
-//    private fun setupSpinner(categories: List<String>) {
-//        val allCategories = listOf("All Categories") + categories
-//        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, allCategories)
-//        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-//        binding.spCategory.adapter = adapter
-//
-//        binding.spCategory.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-//            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-//                selectedCategory = if (position == 0) "" else parent?.getItemAtPosition(position).toString()
-//            }
-//
-//            override fun onNothingSelected(parent: AdapterView<*>?) {
-//                selectedCategory = ""
-//            }
-//        }
-//    }
 
     companion object {
 
