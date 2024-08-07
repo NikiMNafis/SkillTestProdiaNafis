@@ -7,12 +7,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.SearchView.OnQueryTextListener
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.nafis.skilltestprodia.R
+import com.nafis.skilltestprodia.database.SearchHistory
 import com.nafis.skilltestprodia.databinding.FragmentHomeBinding
 import com.nafis.skilltestprodia.response.ResultsItem
 import com.nafis.skilltestprodia.viewModel.ArticleViewModel
+import com.nafis.skilltestprodia.viewModel.SearchHistoryViewModel
+import com.nafis.skilltestprodia.viewModel.ViewModelFactory
 
 class HomeFragment : Fragment() {
 
@@ -22,8 +28,11 @@ class HomeFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var articleViewModel: ArticleViewModel
+    private lateinit var searchHistoryViewModel: SearchHistoryViewModel
 
     private var selectedCategory: String = ""
+//    private var searchHistory: SearchHistory? = null
+    private lateinit var searchHistory: SearchHistory
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +47,7 @@ class HomeFragment : Fragment() {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
 
         articleViewModel = ViewModelProvider(this)[ArticleViewModel::class.java]
+        searchHistoryViewModel = obtainViewModel(requireActivity() as AppCompatActivity)
 
         return binding.root
     }
@@ -53,6 +63,43 @@ class HomeFragment : Fragment() {
         articleViewModel.categoryData.observe(viewLifecycleOwner) {
             setupSpinner(it)
         }
+
+        val svArticle = binding.svArticle
+        svArticle.queryHint = "Search"
+        svArticle.setOnQueryTextListener(object : OnQueryTextListener,
+            SearchView.OnQueryTextListener {
+            override fun onQueryTextChange(query: String?): Boolean {
+                articleViewModel.findArticle(query.toString())
+                articleViewModel.articleFindData.observe(viewLifecycleOwner) {
+                    showRvArticles(it)
+                }
+                return true
+            }
+
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                articleViewModel.findArticle(query.toString())
+                articleViewModel.articleFindData.observe(viewLifecycleOwner) {
+                    showRvArticles(it)
+                }
+
+                if (query != null) {
+                    saveHistory(query)
+                }
+                return true
+            }
+        })
+    }
+
+    private fun obtainViewModel(activity: AppCompatActivity): SearchHistoryViewModel {
+        val factory = ViewModelFactory.getInstance(activity.application)
+        return ViewModelProvider(activity, factory)[SearchHistoryViewModel::class.java]
+    }
+
+    private fun saveHistory(query: String) {
+        if (query.isNotEmpty()) {
+            searchHistory = SearchHistory(name = query)
+            searchHistoryViewModel.insert(searchHistory)
+        }
     }
 
     private fun setupSpinner(categories: List<String>) {
@@ -64,7 +111,7 @@ class HomeFragment : Fragment() {
         binding.spCategory.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 selectedCategory = if (position == 0) "" else parent?.getItemAtPosition(position).toString()
-                articleViewModel.filterArticlesByCategory(selectedCategory)
+                articleViewModel.filterArticles(selectedCategory)
                 articleViewModel.articleFilteredData.observe(viewLifecycleOwner) {
                     showRvArticles(it)
                 }
@@ -73,7 +120,7 @@ class HomeFragment : Fragment() {
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
                 selectedCategory = ""
-                articleViewModel.filterArticlesByCategory(selectedCategory)
+                articleViewModel.filterArticles(selectedCategory)
             }
         }
     }
