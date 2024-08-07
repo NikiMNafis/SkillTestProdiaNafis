@@ -88,6 +88,20 @@ class HomeFragment : Fragment() {
                 return true
             }
         })
+
+        binding.ivRecentSearch.setOnClickListener {
+            val searchHistoryFragment = SearchHistoryFragment()
+            val fragmentManager = parentFragmentManager
+            fragmentManager.beginTransaction().apply {
+                replace(
+                    R.id.main_frame_container,
+                    searchHistoryFragment,
+                    SearchHistoryFragment::class.java.simpleName
+                )
+                addToBackStack(null)
+                commit()
+            }
+        }
     }
 
     private fun obtainViewModel(activity: AppCompatActivity): SearchHistoryViewModel {
